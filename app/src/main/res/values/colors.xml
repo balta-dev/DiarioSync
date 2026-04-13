@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ── FONDOS ────────────────────────────────── -->
+    <color name="ds_bg">#0F0F12</color>
+    <color name="ds_surface">#17171C</color>
+    <color name="ds_surface2">#1E1E26</color>
+
+    <!-- ── BORDES ─────────────────────────────────── -->
+    <color name="ds_border">#12121A</color>          <!-- 7% white sobre bg -->
+    <color name="ds_border2">#26262E</color>          <!-- 12% white -->
+
+    <!-- ── TEXTO ──────────────────────────────────── -->
+    <color name="ds_text_primary">#F0EFF5</color>
+    <color name="ds_text_secondary">#8C8BA0</color>   <!-- 55% primary -->
+    <color name="ds_text_tertiary">#605F6B</color>    <!-- 30% primary -->
+
+    <!-- ── ACCENT (índigo) ────────────────────────── -->
+    <color name="ds_accent">#6C7FFF</color>
+    <color name="ds_accent_dim">#1A1F40</color>       <!-- 12% accent -->
+    <color name="ds_accent_border">#2A3060</color>    <!-- 25% accent -->
+
+    <!-- ── VENTA (verde) ──────────────────────────── -->
+    <color name="ds_green">#3FC87A</color>
+    <color name="ds_green_dim">#0F2018</color>        <!-- 12% green -->
+    <color name="ds_green_border">#1A4030</color>     <!-- 25% green -->
+
+    <!-- ── COMPRA (rojo) ──────────────────────────── -->
+    <color name="ds_red">#FF5F6D</color>
+    <color name="ds_red_dim">#2A1015</color>          <!-- 12% red -->
+    <color name="ds_red_border">#501822</color>       <!-- 25% red -->
+
+    <!-- ── PENDIENTE (ámbar) ──────────────────────── -->
+    <color name="ds_amber">#F5A623</color>
+    <color name="ds_amber_dim">#251A08</color>
+
+    <!-- ── BLANCO ─────────────────────────────────── -->
+    <color name="white">#FFFFFF</color>
+
+    <!-- ── NEGRO ─────────────────────────────────── -->
+    <color name="black">#FF000000</color>
+
+</resources>

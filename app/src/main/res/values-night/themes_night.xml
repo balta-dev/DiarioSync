@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  res/values-night/themes.xml
+  La app es siempre dark, así que este es el tema principal.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.DiarioSync" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Colores base del sistema Material -->
+        <item name="colorPrimary">@color/ds_accent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/ds_accent_dim</item>
+        <item name="colorOnPrimaryContainer">@color/ds_accent</item>
+        <item name="colorSurface">@color/ds_surface</item>
+        <item name="colorOnSurface">@color/ds_text_primary</item>
+        <item name="colorSurfaceVariant">@color/ds_surface2</item>
+        <item name="colorOnSurfaceVariant">@color/ds_text_secondary</item>
+        <item name="colorOnBackground">@color/ds_text_primary</item>
+        <item name="colorError">@color/ds_red</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorOutline">@color/ds_border2</item>
+        <!-- Fondo de ventana -->
+        <item name="android:windowBackground">@color/ds_bg</item>
+        <item name="android:statusBarColor">@color/ds_surface</item>
+        <item name="android:navigationBarColor">@color/ds_surface</item>
+        <!-- Textos claros sobre fondo oscuro -->
+        <item name="android:textColorPrimary">@color/ds_text_primary</item>
+        <item name="android:textColorSecondary">@color/ds_text_secondary</item>
+        <!-- TextInputLayout - estilo OutlinedBox global -->
+        <item name="textInputStyle">@style/Widget.DS.TextInputLayout</item>
+        <!-- MaterialButton global -->
+        <item name="materialButtonStyle">@style/Widget.DS.Button</item>
+    </style>
+
+    <!-- ── Estilos de componentes ─────────────────── -->
+
+    <style name="Widget.DS.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/ds_surface2</item>
+        <item name="boxStrokeColor">@color/ds_border2</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="hintTextColor">@color/ds_text_tertiary</item>
+        <item name="android:textColorHint">@color/ds_text_tertiary</item>
+    </style>
+
+    <style name="Widget.DS.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/ds_accent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <style name="Widget.DS.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <style name="Widget.DS.ToggleButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textSize">13sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="strokeColor">@color/ds_border2</item>
+        <item name="backgroundTint">@color/ds_surface2</item>
+        <item name="android:textColor">@color/ds_text_secondary</item>
+    </style>
+
+    <!-- Shape para FAB con esquinas redondeadas medianas -->
+    <style name="ShapeAppearance.DS.FAB" parent="ShapeAppearance.Material3.Corner.Full">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="ThemeOverlay.DiarioSync.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/ds_accent</item>
+        <item name="colorSurface">@color/ds_surface</item>
+        <item name="colorOnSurface">@color/ds_text_primary</item>
+        <item name="colorSecondary">@color/ds_accent</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ds_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="postSplashScreenTheme">@style/Theme.DiarioSync</item>
+    </style>
+
+</resources>

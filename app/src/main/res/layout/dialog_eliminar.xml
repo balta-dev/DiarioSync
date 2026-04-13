@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/ds_surface">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¡ADVERTENCIA!"
+        android:textColor="@color/ds_red"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.2" />
+
+    <TextView
+        android:id="@+id/tvTituloEliminar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¿Eliminar esta entrada?"
+        android:textColor="@color/ds_text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvCuerpoEliminar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Esta acción no se puede deshacer."
+        android:textColor="@color/ds_text_secondary"
+        android:textSize="14sp" />
+
+</LinearLayout>

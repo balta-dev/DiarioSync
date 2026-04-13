@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/bg_stat_card.xml -->
+<!-- Fondo de los mini-stats dentro de item_jornada -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/ds_surface" />
+    <corners android:radius="8dp" />
+</shape>

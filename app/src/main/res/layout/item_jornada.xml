@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  DiarioSync — item_jornada.xml
+  Item del historial: una jornada/caja cerrada.
+  Diseño: card con header fecha + chip "Cerrada",
+  grid 2×2 con stats, botón exportar discreto.
+-->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/ds_surface2"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/ds_border"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="12dp">
+
+        <!-- Fila superior: fecha + chips + btn exportar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtFechaJornada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="08 ABR 2026"
+                    android:textColor="@color/ds_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace" />
+
+                <TextView
+                    android:id="@+id/txtCantOperaciones"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Cerrada · 14 operaciones"
+                    android:textColor="@color/ds_text_tertiary"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <!-- Botón exportar esta caja -->
+            <ImageButton
+                android:id="@+id/btnExportarCajaIndiv"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_share"
+                android:contentDescription="Exportar caja"
+                app:tint="@color/ds_accent" />
+
+        </LinearLayout>
+
+        <!-- Stats grid -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <!-- Ventas -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp"
+                android:background="@drawable/bg_stat_card">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="VENTAS"
+                    android:textColor="@color/ds_text_tertiary"
+                    android:textSize="9sp"
+                    android:letterSpacing="0.08" />
+
+                <TextView
+                    android:id="@+id/txtVentasJornada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="$0,00"
+                    android:textColor="@color/ds_green"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace" />
+
+            </LinearLayout>
+
+            <!-- Compras -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp"
+                android:background="@drawable/bg_stat_card">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="COMPRAS"
+                    android:textColor="@color/ds_text_tertiary"
+                    android:textSize="9sp"
+                    android:letterSpacing="0.08" />
+
+                <TextView
+                    android:id="@+id/txtComprasJornada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="$0,00"
+                    android:textColor="@color/ds_red"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

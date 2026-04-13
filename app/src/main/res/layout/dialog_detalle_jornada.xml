@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/ds_surface">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="REGISTRO HISTÓRICO"
+        android:textColor="@color/ds_accent"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.2" />
+
+    <TextView
+        android:id="@+id/tvTituloDetalle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detalle de Caja"
+        android:textColor="@color/ds_text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:fadeScrollbars="false">
+
+        <TextView
+            android:id="@+id/tvCuerpoDetalle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/ds_text_secondary"
+            android:textSize="13sp"
+            android:lineSpacingExtra="4dp"
+            android:fontFamily="monospace" />
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
