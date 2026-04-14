@@ -106,6 +106,9 @@ dependencies {
     //For Github API
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
+    //GMS
+    implementation("com.google.android.gms:play-services-base:18.4.0")
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -19,6 +19,13 @@
         <package android:name="com.google.android.gms" />
     </queries>
 
+    <queries>
+        <package android:name="com.google.android.gms" />
+        <intent>
+            <action android:name="com.google.android.gms.metadata.API_ID" />
+        </intent>
+    </queries>
+
     <application
         android:name=".DiarioSyncApp"
         android:allowBackup="true"
