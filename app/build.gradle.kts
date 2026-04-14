@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,28 +8,49 @@ plugins {
     alias(libs.plugins.google.services) // Use the alias from your TOML
 }
 
+// --- Lógica para leer local.properties ---
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
 android {
     namespace = "com.example.diariosync"
     compileSdk = 35 // Changed to 35 (Stable) unless you specifically need 36 preview
+
+    // --- Configuración de Firma ---
+    signingConfigs {
+        create("release") {
+            // Buscamos los valores en el local.properties
+            storeFile = localProperties.getProperty("release.keystore.path")?.let { file(it) }
+            storePassword = localProperties.getProperty("release.keystore.password")
+            keyAlias = localProperties.getProperty("release.key.alias")
+            keyPassword = localProperties.getProperty("release.key.password")
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.diariosync"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            // Vinculamos la firma de release aquí
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -78,6 +102,9 @@ dependencies {
 
     // Swipe refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    //For Github API
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Tests
     testImplementation(libs.junit)

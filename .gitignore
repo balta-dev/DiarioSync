@@ -17,6 +17,7 @@ local.properties
 # APK y builds
 *.apk
 *.aab
+**/release/
 
 # Firebase — no subir claves
 google-services.json
