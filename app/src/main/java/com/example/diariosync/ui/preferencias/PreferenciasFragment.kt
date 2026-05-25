@@ -235,7 +235,7 @@ class PreferenciasFragment : Fragment() {
 
                     // 1. Actualizar contraseña en Firestore
                     docRef.update("password", nuevaPass).await()
-                    Snackbar.make(binding.root, "Contraseña actualizada. Enviando mails...", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(binding.root, "Contraseña actualizada. Intentando avisar...", Snackbar.LENGTH_SHORT).show()
 
                     // 2. Obtener lista de miembros actual
                     val snap = docRef.get().await()
@@ -251,6 +251,7 @@ class PreferenciasFragment : Fragment() {
 
                     if (correosDestino.isEmpty()) {
                         android.util.Log.e("EmailJS_Error", "No se encontró ningún miembro con recibeCorreos=true o correos vacíos")
+                        Snackbar.make(binding.root, "Nadie a quien avisar.", Snackbar.LENGTH_SHORT).show()
                     }
 
                     // 4. Mandar mails si hay a quien mandarle
@@ -403,9 +404,11 @@ class PreferenciasFragment : Fragment() {
 
             if (!response.isSuccessful) {
                 android.util.Log.e("EmailJS", "Fallo al enviar: $responseBody")
+                Snackbar.make(binding.root, "Fallo al enviar", Snackbar.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             android.util.Log.e("EmailJS", "Error al mandar mail de password: ${e.message}")
+            Snackbar.make(binding.root, "Ocurrió un problema", Snackbar.LENGTH_SHORT).show()
         }
     }
 
