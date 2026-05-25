@@ -110,6 +110,20 @@ class PreferenciasFragment : Fragment() {
             }
         }
 
+        // ── Reportes ────────────────────────────────────────────────────
+        val exportarAlCerrar = prefs.getBoolean("exportar_excel_al_cerrar", false)
+        binding.switchExportarExcel.isChecked = exportarAlCerrar
+
+        binding.switchExportarExcel.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit { putBoolean("exportar_excel_al_cerrar", isChecked) }
+        }
+
+        // ── Comportamiento  ────────────────────────────
+        binding.switchModoRapido.isChecked = prefs.getBoolean("modo_rapido", false)
+        binding.switchModoRapido.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit { putBoolean("modo_rapido", isChecked) }
+        }
+
         // ── Cierre programado ─────────────────────────────────────────────────
         val esModoRepetido = prefs.getBoolean("cierre_modo_repetido", false)
         if (esModoRepetido) {

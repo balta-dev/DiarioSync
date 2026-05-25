@@ -45,6 +45,7 @@ import java.util.Date
 import java.util.Locale
 import androidx.core.content.edit
 import com.example.diariosync.util.CierreManager
+import com.google.android.material.snackbar.Snackbar.Callback.DISMISS_EVENT_ACTION
 
 class ListaFragment : Fragment() {
 
@@ -130,9 +131,12 @@ class ListaFragment : Fragment() {
             viewModel.actualizarFiltros(null, ListaViewModel.OrdenarPor.RECIENTES)
             val listaActual = viewModel.operaciones.value
             if (listaActual.isNullOrEmpty()) {
-                Snackbar.make(binding.root, "Nada que cerrar", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, "Nada que hacer", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            val prefs = requireContext().getSharedPreferences("device_prefs", Context.MODE_PRIVATE)
+            val autoExportar = prefs.getBoolean("exportar_excel_al_cerrar", false)
 
             // Cálculos rápidos
             val ventas = listaActual.filter { it.tipo == TipoOperacion.VENTA }.sumOf { it.cantidad * it.precio }
@@ -149,6 +153,17 @@ class ListaFragment : Fragment() {
                 .setView(dialogView)
                 .setPositiveButton("Cerrar Caja") { _, _ ->
                     ejecutarLogicaCierre(listaActual)
+
+                    if (autoExportar) {
+                        try {
+                            val listaCronologica = listaActual.sortedBy { it.timestamp }
+                            val uri = ExcelExporter.exportar(requireContext(), listaCronologica, "cierre_jornada")
+                            ExcelExporter.compartir(requireContext(), uri)
+                        } catch (e: Exception) {
+                            Snackbar.make(binding.root, "Cierre hecho, pero falló el Excel: ${e.message}", Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+
                 }
                 .setNegativeButton("Cancelar", null)
                 .show()
@@ -212,40 +227,71 @@ class ListaFragment : Fragment() {
                 c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
                 dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
             ) {
-                // Definimos el tope (por ejemplo, el 20% del ancho del RecyclerView)
-                val maxWidth = recyclerView.width * 0.2f
+                // Leemos la preferencia usando el contexto del propio RecyclerView
+                val prefs = recyclerView.context.getSharedPreferences("device_prefs", Context.MODE_PRIVATE)
+                val modoRapido = prefs.getBoolean("modo_rapido", false)
 
-                // Limitamos el valor de dX (el desplazamiento horizontal)
-                val limitedDX = when {
-                    dX > maxWidth -> maxWidth  // Tope hacia la derecha
-                    dX < -maxWidth -> -maxWidth // Tope hacia la izquierda
-                    else -> dX
+                val finalDX = if (modoRapido) {
+                    dX // MODO RÁPIDO: Sin topes, permitimos que el ítem visualmente salga de la pantalla
+                } else {
+                    // MODO CLÁSICO: Mantenemos tu tope del 20% para que quede lindo junto al Diálogo
+                    val maxWidth = recyclerView.width * 0.2f
+                    when {
+                        dX > maxWidth -> maxWidth  // Tope derecha
+                        dX < -maxWidth -> -maxWidth // Tope izquierda
+                        else -> dX
+                    }
                 }
 
-                super.onChildDraw(c, recyclerView, viewHolder, limitedDX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(c, recyclerView, viewHolder, finalDX, dY, actionState, isCurrentlyActive)
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val operacion = adapter.currentList[position]
 
-                val dialogView = layoutInflater.inflate(R.layout.dialog_eliminar, null)
-                val tvCuerpo = dialogView.findViewById<TextView>(R.id.tvCuerpoEliminar)
-                tvCuerpo.text = "Vas a quitar '${operacion.producto}' de la lista."
+                val prefs = requireContext().getSharedPreferences("device_prefs", Context.MODE_PRIVATE)
+                val modoRapido = prefs.getBoolean("modo_rapido", false)
 
-                val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_DiarioSync_MaterialAlertDialog)
-                    .setView(dialogView)
-                    .setPositiveButton("Eliminar") { _, _ ->
-                        viewModel.eliminarOperacion(operacion)
-                    }
-                    .setNegativeButton("Cancelar") { _, _ ->
-                        // IMPORTANTE: Al cancelar, reseteamos la vista del ítem
-                        adapter.notifyItemChanged(position)
-                    }.setOnCancelListener {
-                        adapter.notifyItemChanged(position)
-                    }
-                    .show()
-                dialog.window?.setDimAmount(0.6f)
+                if (modoRapido) {
+                    // 1. Ocultar de la pantalla inmediatamente de forma visual (sigue en la DB)
+                    viewModel.prepararEliminacionTemporal(operacion)
+
+                    // 2. Mostrar el Snackbar y controlar sus eventos de cierre
+                    Snackbar.make(binding.root, "'${operacion.producto}' eliminado", Snackbar.LENGTH_LONG)
+                        .setAction("Deshacer") {
+                            // Si pulsa Deshacer, lo removemos de la sala de espera y vuelve a aparecer
+                            viewModel.deshacerEliminacionTemporal(operacion)
+                        }
+                        .addCallback(object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                super.onDismissed(transientBottomBar, event)
+                                // Si el cartel desapareció por cualquier motivo que NO sea presionar "Deshacer"
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    viewModel.confirmarEliminacionDefinitiva(operacion)
+                                }
+                            }
+                        })
+                        .show()
+                } else {
+                    // Comportamiento clásico por diálogo (Borrador directo al confirmar)
+                    val dialogView = layoutInflater.inflate(R.layout.dialog_eliminar, null)
+                    val tvCuerpo = dialogView.findViewById<TextView>(R.id.tvCuerpoEliminar)
+                    tvCuerpo.text = "Vas a quitar '${operacion.producto}' de la lista."
+
+                    val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_DiarioSync_MaterialAlertDialog)
+                        .setView(dialogView)
+                        .setPositiveButton("Eliminar") { _, _ ->
+                            viewModel.eliminarOperacion(operacion)
+                        }
+                        .setNegativeButton("Cancelar") { _, _ ->
+                            adapter.notifyItemChanged(position)
+                        }.setOnCancelListener {
+                            adapter.notifyItemChanged(position)
+                        }
+                        .show()
+                    dialog.window?.setDimAmount(0.6f)
+                }
             }
         }
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerView)
@@ -281,9 +327,10 @@ class ListaFragment : Fragment() {
     private fun ejecutarLogicaCierre(lista: List<Operacion>) {
         lifecycleScope.launch {
             try {
-                Snackbar.make(binding.root, "Cerrando caja...", Snackbar.LENGTH_SHORT).show()
-                CierreManager.ejecutar(requireContext(), lista)
-                Snackbar.make(binding.root, "Caja cerrada y mails enviados", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, "Cerrando caja...", Snackbar.LENGTH_LONG).show()
+                CierreManager.ejecutar(requireContext(), lista) { mensajeDeProgreso ->
+                    Snackbar.make(binding.root, mensajeDeProgreso, Snackbar.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
                 Snackbar.make(binding.root, "Error al cerrar caja: ${e.message}", Snackbar.LENGTH_LONG).show()
             }

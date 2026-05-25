@@ -21,11 +21,15 @@ import java.util.Locale
 
 object CierreManager {
 
-    suspend fun ejecutar(context: Context, operaciones: List<Operacion>) {
+    // 1. Instanciamos el cliente una sola vez para reutilizar el pool de conexiones
+    private val client by lazy { OkHttpClient() }
+
+    suspend fun ejecutar(context: Context, operaciones: List<Operacion>, onProgreso: (String) -> Unit) {
         val repository = OperacionRepository(context)
 
         // 1. Cerrar caja
         repository.cerrarCaja()
+        withContext(Dispatchers.Main) { onProgreso("Caja cerrada correctamente") }
 
         // 2. Generar Excel
         val fecha = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
@@ -36,11 +40,14 @@ object CierreManager {
 
         // 3. Subir a Dropbox
         val excelUrl = subirADropbox(context, bytes, nombre, repository.getAgendaId() ?: "sin_sala")
-        android.util.Log.d("CierreManager", "URL obtenida: $excelUrl")
+        if (excelUrl == null) {
+            withContext(Dispatchers.Main) { onProgreso("No se pudo subir a la nube") }
+        }
 
         // 4. Mandar mails
         val correosDestino = repository.getCorreosMiembros()
         if (excelUrl != null && correosDestino.isNotEmpty()) {
+            withContext(Dispatchers.Main) { onProgreso("Enviando correos...") }
             val nf = NumberFormat.getCurrencyInstance(Locale("es", "AR"))
             val ingresos = operaciones.filter { it.tipo == TipoOperacion.VENTA }.sumOf { it.total }
             val egresos = operaciones.filter { it.tipo == TipoOperacion.COMPRA }.sumOf { it.total }
@@ -87,20 +94,21 @@ object CierreManager {
                     )
                     .build()
 
-                val response = OkHttpClient().newCall(request).execute()
-                val body = response.body?.string() ?: return@withContext null
-                android.util.Log.d("CierreManager", "Refresh response (${response.code}): $body")
-                val json = JSONObject(body)
+                // 2. Uso del .use para auto-cerrar los recursos
+                client.newCall(request).execute().use { response ->
+                    val body = response.body?.string() ?: return@withContext null
+                    val json = JSONObject(body)
 
-                val newToken = json.optString("access_token").takeIf { it.isNotEmpty() } ?: return@withContext null
-                val expiresIn = json.optLong("expires_in", 14400L)
+                    val newToken = json.optString("access_token").takeIf { it.isNotEmpty() } ?: return@withContext null
+                    val expiresIn = json.optLong("expires_in", 14400L)
 
-                prefs.edit()
-                    .putString("access_token", newToken)
-                    .putLong("expires_at", System.currentTimeMillis() + expiresIn * 1000)
-                    .apply()
+                    prefs.edit()
+                        .putString("access_token", newToken)
+                        .putLong("expires_at", System.currentTimeMillis() + expiresIn * 1000)
+                        .apply()
 
-                newToken
+                    newToken
+                }
             } catch (e: Exception) {
                 android.util.Log.e("CierreManager", "Error al refrescar token: ${e.message}")
                 null
@@ -113,6 +121,7 @@ object CierreManager {
                 val path = "/cierres/$agendaId/$nombre.xlsx"
                 val token = conseguirAccessTokenValido(context) ?: return@withContext null
 
+                // A. Subimos el archivo
                 val uploadRequest = Request.Builder()
                     .url("https://content.dropboxapi.com/2/files/upload")
                     .addHeader("Authorization", "Bearer $token")
@@ -121,70 +130,69 @@ object CierreManager {
                     .post(bytes.toRequestBody("application/octet-stream".toMediaTypeOrNull()))
                     .build()
 
-                val uploadResponse = OkHttpClient().newCall(uploadRequest).execute()
-                if (!uploadResponse.isSuccessful) {
-                    android.util.Log.e("CierreManager", "Upload failed: ${uploadResponse.body?.string()}")
-                    return@withContext null
+                client.newCall(uploadRequest).execute().use { uploadResponse ->
+                    if (!uploadResponse.isSuccessful) {
+                        android.util.Log.e("CierreManager", "Upload failed")
+                        return@withContext null
+                    }
                 }
 
+                // B. Intentamos crear el link público
                 val shareJson = JSONObject().apply {
                     put("path", path)
                     put("settings", JSONObject().apply { put("requested_visibility", "public") })
                 }
+
                 val shareRequest = Request.Builder()
                     .url("https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings")
                     .addHeader("Authorization", "Bearer $token")
                     .post(shareJson.toString().toRequestBody("application/json".toMediaTypeOrNull()))
                     .build()
 
-                val shareResponse = OkHttpClient().newCall(shareRequest).execute()
-                val shareBody = shareResponse.body?.string() ?: return@withContext null
-                android.util.Log.d("CierreManager", "Share response (${shareResponse.code}): $shareBody")
+                val urlResult = client.newCall(shareRequest).execute().use { shareResponse ->
+                    val shareBody = shareResponse.body?.string() ?: return@use null
+                    val json = try { JSONObject(shareBody) } catch (e: Exception) { return@use null }
 
-                val json = try { JSONObject(shareBody) } catch (e: Exception) { return@withContext null }
+                    if (shareResponse.isSuccessful) {
+                        json.getString("url")
+                    } else if (shareResponse.code == 409) {
+                        // C. Si el link ya existe, lo listamos, lo revocamos y creamos uno nuevo
+                        val listJson = JSONObject().apply { put("path", path) }
 
-                val url = if (shareResponse.isSuccessful) {
-                    json.getString("url")
-                } else if (shareResponse.code == 409) {
-                    val listJson = JSONObject().apply { put("path", path) }
-                    val listBody = OkHttpClient().newCall(
-                        Request.Builder()
-                            .url("https://api.dropboxapi.com/2/sharing/list_shared_links")
-                            .addHeader("Authorization", "Bearer $token")
-                            .post(listJson.toString().toRequestBody("application/json".toMediaTypeOrNull()))
-                            .build()
-                    ).execute().body?.string()
-
-                    val existingUrl = JSONObject(listBody ?: "{}")
-                        .optJSONArray("links")?.optJSONObject(0)?.optString("url")
-
-                    if (existingUrl != null) {
-                        OkHttpClient().newCall(
+                        val existingUrl = client.newCall(
                             Request.Builder()
-                                .url("https://api.dropboxapi.com/2/sharing/revoke_shared_link")
+                                .url("https://api.dropboxapi.com/2/sharing/list_shared_links")
                                 .addHeader("Authorization", "Bearer $token")
-                                .post(JSONObject().apply { put("url", existingUrl) }.toString()
-                                    .toRequestBody("application/json".toMediaTypeOrNull()))
+                                .post(listJson.toString().toRequestBody("application/json".toMediaTypeOrNull()))
                                 .build()
-                        ).execute()
+                        ).execute().use { listRes ->
+                            val listBody = listRes.body?.string() ?: "{}"
+                            JSONObject(listBody).optJSONArray("links")?.optJSONObject(0)?.optString("url")
+                        }
+
+                        if (existingUrl != null) {
+                            client.newCall(
+                                Request.Builder()
+                                    .url("https://api.dropboxapi.com/2/sharing/revoke_shared_link")
+                                    .addHeader("Authorization", "Bearer $token")
+                                    .post(JSONObject().apply { put("url", existingUrl) }.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+                                    .build()
+                            ).execute().close() // Usamos .close() directo porque no necesitamos leer el cuerpo
+                        }
+
+                        // Reintentamos crear el link limpio
+                        client.newCall(shareRequest).execute().use { retryRes ->
+                            JSONObject(retryRes.body?.string() ?: "{}").optString("url")
+                        }
+                    } else {
+                        android.util.Log.e("CierreManager", "Share error: $shareBody")
+                        null
                     }
+                }
 
-                    val retryResponse = OkHttpClient().newCall(
-                        Request.Builder()
-                            .url("https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings")
-                            .addHeader("Authorization", "Bearer $token")
-                            .post(shareJson.toString().toRequestBody("application/json".toMediaTypeOrNull()))
-                            .build()
-                    ).execute()
-                    JSONObject(retryResponse.body?.string() ?: "{}").optString("url")
-                } else {
-                    android.util.Log.e("CierreManager", "Share error: $shareBody")
-                    null
-                } ?: return@withContext null
-
-                url.replace("dl=0", "dl=1")
+                urlResult?.replace("dl=0", "dl=1")
             } catch (e: Exception) {
-                android.util.Log.e("CierreManager", "Error: ${e.message}")
+                android.util.Log.e("CierreManager", "Error en Dropbox: ${e.message}")
                 null
             }
         }
@@ -211,13 +219,14 @@ object CierreManager {
                 })
             }
 
-            val response = OkHttpClient().newCall(
-                Request.Builder()
-                    .url("https://api.emailjs.com/api/v1.0/email/send")
-                    .post(json.toString().toRequestBody("application/json".toMediaTypeOrNull()))
-                    .build()
-            ).execute()
-            android.util.Log.d("CierreManager", "Mail response (${response.code}): ${response.body?.string()}")
+            val request = Request.Builder()
+                .url("https://api.emailjs.com/api/v1.0/email/send")
+                .post(json.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                android.util.Log.d("CierreManager", "Mail response (${response.code}): ${response.body?.string()}")
+            }
         } catch (e: Exception) {
             android.util.Log.e("CierreManager", "Error al mandar mail: ${e.message}")
         }

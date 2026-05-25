@@ -42,6 +42,8 @@ class ListaViewModel(application: Application) : AndroidViewModel(application) {
     private var filtroTipo: Boolean? = null
     private var ordenUI: OrdenarPor = OrdenarPor.RECIENTES
 
+    private val operacionesEnEsperaEliminar = mutableSetOf<String>()
+
     // Expone el código de agenda para mostrarlo en la UI
     fun getAgendaId(): String? = repository.getAgendaId()
 
@@ -52,9 +54,31 @@ class ListaViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // Usado por el diálogo clásico (Elimina inmediatamente porque ya fue confirmado)
     fun eliminarOperacion(operacion: Operacion) {
         viewModelScope.launch { repository.eliminar(operacion) }
     }
+
+    // ── Métodos para el flujo rápido del Snackbar ──
+
+    fun prepararEliminacionTemporal(operacion: Operacion) {
+        operacionesEnEsperaEliminar.add(operacion.id)
+        operaciones.value?.let { procesarListaParaUI(it) } // Refresca la UI para ocultarlo de una
+    }
+
+    fun deshacerEliminacionTemporal(operacion: Operacion) {
+        operacionesEnEsperaEliminar.remove(operacion.id)
+        operaciones.value?.let { procesarListaParaUI(it) } // Refresca la UI para volver a mostrarlo
+    }
+
+    fun confirmarEliminacionDefinitiva(operacion: Operacion) {
+        // Doble verificación por seguridad: si todavía está en la sala de espera, se borra de la DB
+        if (operacionesEnEsperaEliminar.contains(operacion.id)) {
+            operacionesEnEsperaEliminar.remove(operacion.id)
+            viewModelScope.launch { repository.eliminar(operacion) }
+        }
+    }
+    // ────────────────────────────────────────────────
 
     fun cerrarCaja() {
         viewModelScope.launch { repository.cerrarCaja() }
@@ -98,10 +122,11 @@ class ListaViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun procesarListaParaUI(lista: List<Operacion>) {
+        val listaFiltradaPorEspera = lista.filter { it.id !in operacionesEnEsperaEliminar }
         var filtrada = when (filtroTipo) {
-            true  -> lista.filter { it.tipo == TipoOperacion.VENTA }
-            false -> lista.filter { it.tipo == TipoOperacion.COMPRA }
-            else  -> lista
+            true  -> listaFiltradaPorEspera.filter { it.tipo == TipoOperacion.VENTA }
+            false -> listaFiltradaPorEspera.filter { it.tipo == TipoOperacion.COMPRA }
+            else  -> listaFiltradaPorEspera
         }
         filtrada = when (ordenUI) {
             OrdenarPor.RECIENTES   -> filtrada.sortedByDescending { it.timestamp }
