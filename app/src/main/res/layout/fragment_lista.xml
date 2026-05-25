@@ -46,7 +46,7 @@
             android:layout_height="40dp"
             android:layout_marginEnd="-4dp"
             android:background="@drawable/bg_icon_btn"
-            android:src="@android:drawable/ic_menu_share"
+            android:src="@drawable/ic_share"
             app:tint="@color/ds_text_secondary"
             android:contentDescription="Exportar Excel" />
 
@@ -56,7 +56,7 @@
             android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:background="@drawable/bg_icon_btn"
-            android:src="@android:drawable/ic_menu_recent_history"
+            android:src="@drawable/ic_history"
             app:tint="@color/ds_text_secondary"
             android:contentDescription="Historial" />
 
@@ -65,9 +65,19 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/bg_icon_btn"
-            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:src="@drawable/ic_sort"
             app:tint="@color/ds_text_secondary"
             android:contentDescription="Filtrar" />
+
+        <ImageButton
+            android:id="@+id/btnPreferencias"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="0dp"
+            android:background="@drawable/bg_icon_btn"
+            android:src="@drawable/ic_settings"
+            app:tint="@color/ds_text_secondary"
+            android:contentDescription="Preferencias" />
 
     </LinearLayout>
 
@@ -88,25 +98,29 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
-            android:paddingStart="20dp">
+            android:paddingStart="0dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:letterSpacing="0.08"
-                android:text="VENTAS"
+                android:text="INGRESOS"
                 android:textColor="@color/ds_text_secondary"
                 android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/txtTotalVentas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
                 android:fontFamily="monospace"
                 android:text="$0,00"
                 android:textColor="@color/ds_green"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:gravity="center"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeMaxTextSize="24sp"
+                app:autoSizeStepGranularity="1sp" />
         </LinearLayout>
 
         <View
@@ -121,25 +135,29 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:paddingEnd="20dp">
+            android:paddingEnd="0dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="COMPRAS"
+                android:text="EGRESOS"
                 android:textColor="@color/ds_text_secondary"
                 android:textSize="10sp"
                 android:letterSpacing="0.08" />
 
             <TextView
                 android:id="@+id/txtTotalCompras"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:fontFamily="monospace"
                 android:text="$0,00"
                 android:textColor="@color/ds_red"
-                android:textSize="24sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace" />
+                android:gravity="center"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeMaxTextSize="24sp"
+                app:autoSizeStepGranularity="1sp" />
         </LinearLayout>
 
     </LinearLayout>
@@ -269,7 +287,7 @@
         <ImageView
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:src="@drawable/outline_archive_24"
+            android:src="@drawable/ic_receipt"
             app:tint="@color/ds_text_secondary" />
 
     </LinearLayout>
@@ -285,10 +303,10 @@
         android:textColor="@color/white"
         android:textAllCaps="false"
         android:elevation="12dp"
-        app:icon="@android:drawable/ic_input_add"
+        app:icon="@drawable/ic_add"
         app:iconTint="@color/white"
         app:rippleColor="@color/ds_accent"
-        app:backgroundTint="@color/ds_accent_border"
+        android:backgroundTint="@color/ds_accent_border"
         app:cornerRadius="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

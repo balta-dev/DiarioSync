@@ -38,12 +38,36 @@ class AgendaFragment : Fragment() {
     }
 
     private fun setupSwitchLogic() {
-        binding.etCodigoUnirse.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && !modoUnirseArriba) switchLayouts(unirseArriba = true)
+        val focusListener = View.OnFocusChangeListener { vista, hasFocus ->
+            if (hasFocus) {
+                // Evaluamos de qué tarjeta viene el foco
+                val esDeUnirse = vista.id == R.id.etCodigoUnirse || vista.id == R.id.etPasswordUnirse
+
+                // Ejecutamos la animación si hace falta
+                if (esDeUnirse && !modoUnirseArriba) {
+                    switchLayouts(unirseArriba = true)
+                } else if (!esDeUnirse && modoUnirseArriba) {
+                    switchLayouts(unirseArriba = false)
+                }
+
+                // Llamamos al mini scroll para hacer visible el botón correcto
+                val botonAMostrar = if (esDeUnirse) binding.btnUnirseAgenda else binding.btnCrearAgenda
+                enfocarBoton(botonAMostrar)
+            }
         }
-        binding.etCodigoCrear.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && modoUnirseArriba) switchLayouts(unirseArriba = false)
-        }
+
+        // Asignamos el mismo listener a todos los campos
+        binding.etCodigoCrear.onFocusChangeListener = focusListener
+        binding.etPasswordCrear.onFocusChangeListener = focusListener
+        binding.etCodigoUnirse.onFocusChangeListener = focusListener
+        binding.etPasswordUnirse.onFocusChangeListener = focusListener
+    }
+
+    private fun enfocarBoton(boton: View) {
+        // Le damos 300ms de margen para que la animación y el teclado terminen de acomodar la pantalla
+        binding.nestedScrollView.postDelayed({
+            binding.nestedScrollView.smoothScrollTo(0, 200)
+        }, 100)
     }
 
     /**
@@ -109,7 +133,7 @@ class AgendaFragment : Fragment() {
                 binding.tvSeparador.text = "o sumate a alguien más"
             }
 
-            binding.nestedScrollView.smoothScrollTo(0, 0)
+            //binding.nestedScrollView.smoothScrollTo(0, 0)
         }
     }
 
@@ -145,24 +169,26 @@ class AgendaFragment : Fragment() {
     private fun setupButtons() {
         binding.btnCrearAgenda.setOnClickListener {
             val codigo = binding.etCodigoCrear.text.toString().trim()
+            val password = binding.etPasswordCrear.text.toString().trim()
             if (codigo.length < 4) {
                 binding.tilCodigoCrear.error = "Mínimo 4 caracteres"
                 return@setOnClickListener
             }
             binding.tilCodigoCrear.error = null
             binding.tilCodigoUnirse.error = null
-            viewModel.crearAgenda(codigo)
+            viewModel.crearAgenda(codigo, password)
         }
 
         binding.btnUnirseAgenda.setOnClickListener {
             val codigo = binding.etCodigoUnirse.text.toString().trim()
+            val password = binding.etPasswordUnirse.text.toString().trim()
             if (codigo.isEmpty()) {
                 binding.tilCodigoUnirse.error = "Ingresá el código"
                 return@setOnClickListener
             }
             binding.tilCodigoCrear.error = null
             binding.tilCodigoUnirse.error = null
-            viewModel.unirseAAgenda(codigo)
+            viewModel.unirseAAgenda(codigo, password)
         }
     }
 

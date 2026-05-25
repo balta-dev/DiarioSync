@@ -43,4 +43,22 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilCorreo"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tu correo electrónico (opcional)"
+        app:boxStrokeColor="@color/ds_accent"
+        app:hintTextColor="@color/ds_accent">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etCorreoUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:textColor="@color/ds_text_primary" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 </LinearLayout>

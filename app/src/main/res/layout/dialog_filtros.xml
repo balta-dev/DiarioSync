@@ -36,14 +36,14 @@
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Solo Ventas" />
+            android:text="Solo Ingreso" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipSoloCompras"
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Solo Compras" />
+            android:text="Solo Egreso" />
     </com.google.android.material.chip.ChipGroup>
 
     <TextView

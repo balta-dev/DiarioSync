@@ -126,4 +126,14 @@ class ListaViewModel(application: Application) : AndroidViewModel(application) {
         return repository.sincronizarManual()
     }
 
+    suspend fun getCorreosMiembros(): List<String> {
+        return repository.getCorreosMiembros()
+    }
+
+    fun getNombreUsuario(): String {
+        return getApplication<Application>()
+            .getSharedPreferences("device_prefs", android.content.Context.MODE_PRIVATE)
+            .getString("user_name", "Desconocido") ?: "Desconocido"
+    }
+
 }

@@ -47,7 +47,7 @@ class OperacionRepository(private val context: Context) {
      * Crea agenda nueva. Limpia Room antes de arrancar con pizarra en blanco.
      * Falla si el código ya existe en Firestore.
      */
-    suspend fun crearAgenda(codigo: String, deviceId: String): Result<Unit> = runCatching {
+    suspend fun crearAgenda(codigo: String, password: String, deviceId: String, correo: String): Result<Unit> = runCatching {
         val norm = codigo.trim().uppercase()
         require(norm.length >= 4) { "El código debe tener al menos 4 caracteres" }
 
@@ -56,10 +56,11 @@ class OperacionRepository(private val context: Context) {
 
         docRef.set(mapOf(
             "creadaEn"     to com.google.firebase.Timestamp.now(),
-            "dispositivos" to listOf(deviceId)
+            "password"     to password,
+            "dispositivos" to listOf(deviceId),
+            "miembros" to listOf(mapOf("correo" to correo, "recibeCorreos" to true))
         )).await()
 
-        // Limpiar Room DESPUÉS de confirmar que Firestore aceptó la agenda
         dao.borrarTodo()
         setAgendaId(norm)
     }
@@ -69,19 +70,35 @@ class OperacionRepository(private val context: Context) {
      * iniciarEscuchaRemota() repopule con los datos de la agenda.
      * Falla si el código no existe.
      */
-    suspend fun unirseAAgenda(codigo: String, deviceId: String): Result<Unit> = runCatching {
+    suspend fun unirseAAgenda(codigo: String, password: String, deviceId: String, correo: String): Result<Unit> = runCatching {
         val norm = codigo.trim().uppercase()
         val docRef = firestore.collection("agendas").document(norm)
         val snap = docRef.get().await()
 
         check(snap.exists()) { "No existe ninguna agenda con ese código" }
 
+        // ── VALIDACIÓN DE SEGURIDAD ──
+        // Obtenemos la contraseña guardada. Si es null (sala vieja), asumimos "" (sin clave)
+        val passGuardada = snap.getString("password") ?: ""
+
+        // Validamos solo si la sala tiene una contraseña establecida
+        if (passGuardada.isNotEmpty() && passGuardada != password) {
+            throw Exception("Contraseña incorrecta") // Esto detiene el proceso y retorna un Failure
+        }
+        // ─────────────────────────────
+
         val dispositivos = snap.get("dispositivos") as? List<*> ?: emptyList<String>()
         if (!dispositivos.contains(deviceId)) {
             docRef.update("dispositivos", FieldValue.arrayUnion(deviceId)).await()
         }
 
-        // Limpiar Room para que no mezcle datos de agenda anterior
+        // Agregar correo si no está ya en la lista
+        val miembros = snap.get("miembros") as? List<Map<String, Any>> ?: emptyList()
+        val yaEsta = miembros.any { it["correo"] == correo }
+        if (!yaEsta) {
+            docRef.update("miembros", FieldValue.arrayUnion(mapOf("correo" to correo, "recibeCorreos" to true))).await()
+        }
+
         dao.borrarTodo()
         setAgendaId(norm)
     }
@@ -110,6 +127,17 @@ class OperacionRepository(private val context: Context) {
 
         dao.borrarTodo()
         clearAgendaId()
+    }
+
+    suspend fun getCorreosMiembros(): List<String> {
+        val codigo = getAgendaId() ?: return emptyList()
+        return try {
+            val snap = firestore.collection("agendas").document(codigo).get().await()
+            @Suppress("UNCHECKED_CAST")
+            val miembros = snap.get("miembros") as? List<Map<String, Any>> ?: emptyList()
+            miembros.filter { it["recibeCorreos"] == true }
+                .mapNotNull { it["correo"] as? String }
+        } catch (e: Exception) { emptyList() }
     }
 
     // ── Flows locales (Room) ──────────────────────────────────────────────────
@@ -199,6 +227,10 @@ class OperacionRepository(private val context: Context) {
         val batch = firestore.batch()
         activas.documents.forEach { batch.update(it.reference, "activa", false) }
         batch.commit().await()
+    }
+
+    suspend fun getOperacionesActuales(): List<Operacion> {
+        return dao.getActivas().map { it.toDomain() }
     }
 
     suspend fun vaciarHistorialRemoto() {

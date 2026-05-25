@@ -34,9 +34,49 @@ android {
         applicationId = "com.example.diariosync"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.1"
+        versionCode = 2
+        versionName = "1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "EMAILJS_PRIVATE_KEY",
+            "\"${localProperties.getProperty("emailjs.private.key", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "EMAILJS_USER_ID",
+            "\"${localProperties.getProperty("emailjs.user.id", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "EMAILJS_SERVICE_ID",
+            "\"${localProperties.getProperty("emailjs.service.id", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "EMAILJS_TEMPLATE_ID_CIERRECAJA",
+            "\"${localProperties.getProperty("emailjs.template.id.cierrecaja", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "EMAILJS_TEMPLATE_ID_PASSWORDCAMBIO",
+            "\"${localProperties.getProperty("emailjs.template.id.passwordcambio", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "DROPBOX_REFRESH_TOKEN",
+            "\"${localProperties.getProperty("dropbox.refresh.token", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "DROPBOX_APP_KEY",
+            "\"${localProperties.getProperty("dropbox.app.key", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "DROPBOX_APP_SECRET",
+            "\"${localProperties.getProperty("dropbox.app.secret", "")}\""
+        )
     }
 
     buildTypes {

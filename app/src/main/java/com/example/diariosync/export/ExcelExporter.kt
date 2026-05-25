@@ -70,6 +70,46 @@ object ExcelExporter {
         )
     }
 
+    // Agregá esta función al objeto ExcelExporter, después de compartir():
+
+    fun exportarComoBytes(operaciones: List<Operacion>): ByteArray {
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet("Operaciones")
+
+        val headerStyle = workbook.createCellStyle().apply {
+            fillForegroundColor = IndexedColors.GREY_25_PERCENT.index
+            fillPattern = FillPatternType.SOLID_FOREGROUND
+        }
+
+        val header = sheet.createRow(0)
+        listOf("Tipo", "Producto", "Cantidad", "Precio", "Total", "Fecha", "Dispositivo")
+            .forEachIndexed { i, titulo ->
+                header.createCell(i).apply {
+                    setCellValue(titulo)
+                    cellStyle = headerStyle
+                }
+            }
+
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        operaciones.forEachIndexed { index, op ->
+            val row = sheet.createRow(index + 1)
+            row.createCell(0).setCellValue(op.tipo.name)
+            row.createCell(1).setCellValue(op.producto)
+            row.createCell(2).setCellValue(op.cantidad)
+            row.createCell(3).setCellValue(op.precio)
+            row.createCell(4).setCellValue(op.total)
+            row.createCell(5).setCellValue(sdf.format(Date(op.timestamp)))
+            row.createCell(6).setCellValue(op.deviceId.take(8))
+        }
+
+        for (i in 0..6) sheet.setColumnWidth(i, 20 * 256)
+
+        val out = java.io.ByteArrayOutputStream()
+        workbook.write(out)
+        workbook.close()
+        return out.toByteArray()
+    }
+
     fun compartir(context: Context, uri: Uri) {
         // ShareCompat se encarga de grantUriPermission por vos
         // a través de addStream() y startChooser()

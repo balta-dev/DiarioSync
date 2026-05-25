@@ -41,6 +41,9 @@ interface OperacionDao {
     @Query("SELECT * FROM operaciones WHERE activa = 0 ORDER BY timestamp DESC")
     fun getOperacionesCerradas(): Flow<List<OperacionEntity>>
 
+    @Query("SELECT * FROM operaciones WHERE activa = 1")
+    suspend fun getActivas(): List<OperacionEntity>
+
     @Query("DELETE FROM operaciones WHERE activa = 0")
     suspend fun borrarHistorialLocal()
 

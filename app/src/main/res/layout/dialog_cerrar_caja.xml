@@ -27,7 +27,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Se generará el archivo Excel y se limpiará la lista actual."
+        android:text="Se generará el archivo Excel y se limpiará la lista actual. Adicionalmente, se enviará un mail a todos los integrantes de la sala que tengan la opción habilitada."
         android:textColor="@color/ds_text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="16dp" />
@@ -56,7 +56,7 @@
             android:fontFamily="monospace"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:text="Ventas:  $0,00" />
+            android:text="Ingresos:  $0,00" />
 
         <TextView
             android:id="@+id/tvResumenCompras"
@@ -67,7 +67,7 @@
             android:fontFamily="monospace"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:text="Compras: $0,00" />
+            android:text="Egresos: $0,00" />
 
     </LinearLayout>
 

@@ -30,7 +30,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:background="@drawable/bg_icon_btn"
-                android:src="@android:drawable/ic_menu_revert"
+                android:src="@drawable/ic_arrowback"
                 app:tint="@color/ds_text_secondary"
                 android:contentDescription="Volver" />
 
@@ -86,7 +86,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Compra" />
+                    android:text="Egreso" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnVenta"
@@ -94,7 +94,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Venta" />
+                    android:text="Ingreso" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -201,9 +201,12 @@
                 android:background="@drawable/bg_card_surface2"
                 android:text="$0,00"
                 android:textColor="@color/ds_text_secondary"
-                android:textSize="28sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace" />
+                android:fontFamily="monospace"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeMaxTextSize="28sp"
+                app:autoSizeStepGranularity="1sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGuardar"
@@ -215,7 +218,7 @@
                 android:textStyle="bold"
                 android:letterSpacing="0"
                 app:rippleColor="@color/ds_accent"
-                app:backgroundTint="@color/ds_accent_border"
+                android:backgroundTint="@color/ds_accent_border"
                 app:cornerRadius="10dp" />
 
         </LinearLayout>

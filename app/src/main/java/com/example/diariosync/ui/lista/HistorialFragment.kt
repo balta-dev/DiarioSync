@@ -77,6 +77,10 @@
                 }
             }
 
+            binding.btnVolver.setOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
+
             binding.btnExportarHistorial.setOnClickListener {
                 // 1. Obtenemos las cajas que ya están cargadas en el ViewModel y que el Adapter usa
                 val cajasActuales = viewModel.historialAgrupado.value
@@ -98,7 +102,7 @@
             binding.btnVaciarTodo.setOnClickListener {
                 val dialogView = layoutInflater.inflate(R.layout.dialog_vaciar_historial, null)
 
-                com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_DiarioSync_MaterialAlertDialog)
+                val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_DiarioSync_MaterialAlertDialog)
                     .setView(dialogView)
                     .setPositiveButton("Borrar Historial") { _, _ ->
                         viewModel.vaciarHistorial()
@@ -106,6 +110,8 @@
                     }
                     .setNegativeButton("Cancelar", null)
                     .show()
+
+                dialog.window?.setDimAmount(0.8f)
             }
         }
 

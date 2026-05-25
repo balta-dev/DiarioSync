@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ds_bg"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- ── HEADER ──────────────────────────── -->
+        <LinearLayout
+            android:id="@+id/headerBar"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="20dp"
+            android:background="@color/ds_surface"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnVolver"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_icon_btn"
+                android:src="@drawable/ic_arrowback"
+                app:tint="@color/ds_text_secondary"
+                android:contentDescription="Volver" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Preferencias"
+                android:textColor="@color/ds_text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divHeader"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/ds_border"
+            app:layout_constraintTop_toBottomOf="@id/headerBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- ── CONTENIDO ──────────────────────── -->
+        <LinearLayout
+            android:id="@+id/formContent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp"
+            app:layout_constraintTop_toBottomOf="@id/divHeader"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- ── SECCIÓN PERFIL ─────────────── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PERFIL"
+                android:textColor="@color/ds_text_tertiary"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.DS.TextInputLayout"
+                android:hint="Nombre o apodo">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNombre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName|textCapWords"
+                    android:imeOptions="actionNext"
+                    android:textColor="@color/ds_text_primary"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                style="@style/Widget.DS.TextInputLayout"
+                android:hint="Correo electrónico">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCorreo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionDone"
+                    android:textColor="@color/ds_text_primary"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGuardarPerfil"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="14dp"
+                android:text="Guardar cambios"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0"
+                app:rippleColor="@color/ds_accent"
+                android:backgroundTint="@color/ds_accent_border"
+                app:cornerRadius="10dp" />
+
+            <!-- ── SECCIÓN NOTIFICACIONES ─────── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NOTIFICACIONES"
+                android:textColor="@color/ds_text_tertiary"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_card_surface2"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recibir correos"
+                        android:textColor="@color/ds_text_primary"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Te llegará un mail cuando se cierre la caja o se cambie la contraseña"
+                        android:textColor="@color/ds_text_tertiary"
+                        android:textSize="12sp"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchRecibirCorreos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true" />
+
+            </LinearLayout>
+
+            <!-- ── SECCIÓN CIERRE PROGRAMADO ──── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CIERRE PROGRAMADO"
+                android:textColor="@color/ds_text_tertiary"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Toggle tipo de cierre -->
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleTipoCierre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCierreUnico"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Fecha única" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCierreRepetido"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Repetir" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <!-- Panel fecha única -->
+            <LinearLayout
+                android:id="@+id/panelCierreUnico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_surface2"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fecha y hora"
+                    android:textColor="@color/ds_text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvFechaUnica"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sin programar"
+                        android:textColor="@color/ds_text_primary"
+                        android:textSize="15sp"
+                        android:fontFamily="monospace" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnElegirFecha"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Elegir"
+                        android:textSize="13sp"
+                        android:letterSpacing="0"
+                        app:cornerRadius="8dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Panel repetir -->
+            <LinearLayout
+                android:id="@+id/panelCierreRepetido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_surface2"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Días de la semana"
+                    android:textColor="@color/ds_text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="10dp" />
+
+                <!-- Días -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView android:id="@+id/diaLun" android:layout_width="36dp" android:layout_height="36dp"
+                        android:gravity="center" android:text="L" android:textSize="13sp"
+                        android:textColor="@color/ds_text_primary" android:background="@drawable/bg_card_surface2"
+                        android:layout_marginEnd="4dp" />
+                    <TextView android:id="@+id/diaMar" android:layout_width="36dp" android:layout_height="36dp"
+                        android:gravity="center" android:text="M" android:textSize="13sp"
+                        android:textColor="@color/ds_text_primary" android:background="@drawable/bg_card_surface2"
+                        android:layout_marginEnd="4dp" />
+                    <TextView android:id="@+id/diaMie" android:layout_width="36dp" android:layout_height="36dp"
+                        android:gravity="center" android:text="X" android:textSize="13sp"
+                        android:textColor="@color/ds_text_primary" android:background="@drawable/bg_card_surface2"
+                        android:layout_marginEnd="4dp" />
+                    <TextView android:id="@+id/diaJue" android:layout_width="36dp" android:layout_height="36dp"
+                        android:gravity="center" android:text="J" android:textSize="13sp"
+                        android:textColor="@color/ds_text_primary" android:background="@drawable/bg_card_surface2"
+                        android:layout_marginEnd="4dp" />
+                    <TextView android:id="@+id/diaVie" android:layout_width="36dp" android:layout_height="36dp"
+                        android:gravity="center" android:text="V" android:textSize="13sp"
+                        android:textColor="@color/ds_text_primary" android:background="@drawable/bg_card_surface2"
+                        android:layout_marginEnd="4dp" />
+                    <TextView android:id="@+id/diaSab" android:layout_width="36dp" android:layout_height="36dp"
+                        android:gravity="center" android:text="S" android:textSize="13sp"
+                        android:textColor="@color/ds_text_primary" android:background="@drawable/bg_card_surface2"
+                        android:layout_marginEnd="4dp" />
+                    <TextView android:id="@+id/diaDom" android:layout_width="36dp" android:layout_height="36dp"
+                        android:gravity="center" android:text="D" android:textSize="13sp"
+                        android:textColor="@color/ds_text_primary" android:background="@drawable/bg_card_surface2" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hora"
+                    android:textColor="@color/ds_text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvHoraRepetido"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="00:00"
+                        android:textColor="@color/ds_text_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:fontFamily="monospace" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnElegirHora"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Elegir"
+                        android:textSize="13sp"
+                        android:letterSpacing="0"
+                        app:cornerRadius="8dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Botón activar/desactivar cierre programado -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnActivarCierre"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="14dp"
+                android:text="Activar cierre programado"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0"
+                app:rippleColor="@color/ds_accent"
+                android:backgroundTint="@color/ds_accent_border"
+                app:cornerRadius="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SEGURIDAD DE AGENDA"
+                android:textColor="@color/ds_text_tertiary"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPasswordSala"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.DS.TextInputLayout"
+                android:hint="Nueva contraseña de sala"
+                app:endIconMode="password_toggle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPasswordSala"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionDone"
+                    android:textColor="@color/ds_text_primary"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGuardarPassword"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="14dp"
+                android:text="Actualizar contraseña"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0"
+                app:cornerRadius="10dp"
+                style="?attr/materialButtonOutlinedStyle" />
+
+            <!-- ── SECCIÓN APARIENCIA ─────────── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="APARIENCIA"
+                android:textColor="@color/ds_text_tertiary"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_card_surface2"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Modo oscuro"
+                    android:textColor="@color/ds_text_primary"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchModoOscuro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

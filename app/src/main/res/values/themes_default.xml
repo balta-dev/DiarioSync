@@ -5,10 +5,9 @@
   para que el comportamiento sea idéntico en ambos modos.
   Si en el futuro querés un light theme, editá este.
 -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="Base.Theme.DiarioSync" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Mismos valores que el night theme: la app es dark-only -->
         <item name="colorPrimary">@color/ds_accent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/ds_accent_dim</item>
@@ -31,9 +30,6 @@
     </style>
 
     <style name="Theme.DiarioSync" parent="Base.Theme.DiarioSync" />
-
-    <!-- Estilos de componentes (definidos acá para que estén disponibles
-         en ambos archivos de tema sin duplicar) -->
 
     <style name="Widget.DS.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/ds_surface2</item>

@@ -95,6 +95,26 @@
                     style="@style/Widget.DS.TextInputLayout"
                     android:hint="Código (ej: ALMACEN23)">
 
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPasswordCrear"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        style="@style/Widget.DS.TextInputLayout"
+                        android:hint="Contraseña (Opcional)"
+                        app:endIconMode="password_toggle">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPasswordCrear"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:imeOptions="actionDone"
+                            android:textColor="@color/ds_text_primary"
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etCodigoCrear"
                         android:layout_width="match_parent"
@@ -206,6 +226,26 @@
                         android:textSize="15sp"
                         android:fontFamily="monospace"
                         android:letterSpacing="0.05" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPasswordUnirse"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        style="@style/Widget.DS.TextInputLayout"
+                        android:hint="Contraseña (Opcional)"
+                        app:endIconMode="password_toggle">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPasswordUnirse"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:imeOptions="actionDone"
+                            android:textColor="@color/ds_text_primary"
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </com.google.android.material.textfield.TextInputLayout>
 

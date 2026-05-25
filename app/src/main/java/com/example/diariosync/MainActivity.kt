@@ -11,6 +11,7 @@ import android.os.Environment
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.FileProvider
 import com.example.diariosync.data.repository.OperacionRepository
 import com.example.diariosync.databinding.ActivityMainBinding
@@ -30,6 +31,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var repository: OperacionRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("device_prefs", Context.MODE_PRIVATE)
+        val modoOscuro = prefs.getBoolean("modo_oscuro", true) // dark por defecto
+        AppCompatDelegate.setDefaultNightMode(
+            if (modoOscuro) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         installSplashScreen()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -46,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //mostrarDialogoUpdate("1.2","null")
-        revisarActualizaciones()
+        //revisarActualizaciones()
     }
 
     private fun revisarActualizaciones() {
@@ -83,15 +91,16 @@ class MainActivity : AppCompatActivity() {
      *                     → sí  → ListaFragment
      */
     private fun iniciarFlujo() {
-        // 1. Cargamos el fondo primero (Lista o Agenda)
         verificarAgenda()
 
-        // 2. Si es la primera vez (no hay nombre), disparamos el diálogo encima
         if (getNombreUsuario() == null) {
-            // Usamos post para asegurar que el fragment ya se esté transicionando
             binding.root.post {
-                mostrarDialogoBienvenida()
+                mostrarDialogoBienvenida {
+                    revisarActualizaciones()
+                }
             }
+        } else {
+            revisarActualizaciones()
         }
     }
 
@@ -113,10 +122,12 @@ class MainActivity : AppCompatActivity() {
         getSharedPreferences("device_prefs", Context.MODE_PRIVATE)
             .getString("user_name", null)
 
-    private fun mostrarDialogoBienvenida() {
+    private fun mostrarDialogoBienvenida(onCompletado: () -> Unit = {}) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_bienvenida, null)
         val etNombre = dialogView.findViewById<TextInputEditText>(R.id.etNombreUsuario)
         val tilNombre = dialogView.findViewById<TextInputLayout>(R.id.tilNombre)
+        val etCorreo = dialogView.findViewById<TextInputEditText>(R.id.etCorreoUsuario)
+        val tilCorreo = dialogView.findViewById<TextInputLayout>(R.id.tilCorreo)
 
         val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(
             this, R.style.ThemeOverlay_DiarioSync_MaterialAlertDialog
@@ -128,19 +139,38 @@ class MainActivity : AppCompatActivity() {
 
         dialog.window?.let { window ->
             window.setBackgroundDrawableResource(R.drawable.bg_dialog_redondeado)
-            window.setDimAmount(0.8f) // Bien oscuro para que resalte el diálogo
+            window.setDimAmount(0.8f)
         }
 
         dialog.show()
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val nombre = etNombre.text.toString().trim()
-            if (nombre.isNotEmpty()) {
-                getSharedPreferences("device_prefs", Context.MODE_PRIVATE)
-                    .edit { putString("user_name", nombre) }
-                dialog.dismiss()
-            } else {
+            val correo = etCorreo.text.toString().trim()
+
+            var valido = true
+
+            if (nombre.isEmpty()) {
                 tilNombre.error = "Por favor, ingresá un nombre"
+                valido = false
+            } else {
+                tilNombre.error = null
+            }
+
+            if (correo.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                tilCorreo.error = "Ingresá un correo válido"
+                valido = false
+            } else {
+                tilCorreo.error = null
+            }
+
+            if (valido) {
+                getSharedPreferences("device_prefs", Context.MODE_PRIVATE).edit {
+                    putString("user_name", nombre)
+                    putString("user_email", correo)
+                }
+                dialog.dismiss()
+                onCompletado()
             }
         }
     }

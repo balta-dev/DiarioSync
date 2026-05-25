@@ -29,6 +29,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <ImageButton
+            android:id="@+id/btnVolver"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_icon_btn"
+            android:src="@drawable/ic_arrowback"
+            app:tint="@color/ds_text_secondary"
+            android:contentDescription="Volver" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -105,7 +115,7 @@
         android:layout_height="48dp"
         android:layout_marginStart="18dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_share"
+        android:src="@drawable/ic_share"
         app:tint="@color/ds_text_secondary"
         android:elevation="5dp"
         android:contentDescription="Exportar historial"
@@ -120,7 +130,7 @@
         android:layout_height="48dp"
         android:layout_marginEnd="24dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_delete"
+        android:src="@drawable/ic_delete"
         app:tint="@color/ds_red"
         android:elevation="5dp"
         android:contentDescription="Vaciar historial"

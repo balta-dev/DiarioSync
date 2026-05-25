@@ -1,6 +1,7 @@
 package com.example.diariosync.ui.lista
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.net.Uri
@@ -16,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.diariosync.BuildConfig
 import com.example.diariosync.R
 import com.example.diariosync.data.repository.OperacionRepository
 import com.example.diariosync.databinding.FragmentListaBinding
@@ -24,13 +26,25 @@ import com.example.diariosync.domain.model.TipoOperacion
 import com.example.diariosync.export.ExcelExporter
 import com.example.diariosync.ui.agenda.AgendaFragment
 import com.example.diariosync.ui.nueva.NuevaOperacionFragment
+import com.example.diariosync.ui.preferencias.PreferenciasFragment
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.core.content.edit
+import com.example.diariosync.util.CierreManager
 
 class ListaFragment : Fragment() {
 
@@ -128,8 +142,8 @@ class ListaFragment : Fragment() {
             val dialogView = layoutInflater.inflate(R.layout.dialog_cerrar_caja, null)
 
             dialogView.findViewById<TextView>(R.id.tvCantOperaciones).text = "$cant OPERACIONES"
-            dialogView.findViewById<TextView>(R.id.tvResumenVentas).text =  "Ventas:  ${nf.format(ventas)}"
-            dialogView.findViewById<TextView>(R.id.tvResumenCompras).text = "Compras: ${nf.format(compras)}"
+            dialogView.findViewById<TextView>(R.id.tvResumenVentas).text =  "Ingresos:  ${nf.format(ventas)}"
+            dialogView.findViewById<TextView>(R.id.tvResumenCompras).text = "Egresos: ${nf.format(compras)}"
 
             val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_DiarioSync_MaterialAlertDialog)
                 .setView(dialogView)
@@ -154,6 +168,13 @@ class ListaFragment : Fragment() {
 
         binding.btnFiltrar.setOnClickListener {
             mostrarDialogoFiltros()
+        }
+
+        binding.btnPreferencias.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, PreferenciasFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         binding.btnSalirSala.setOnClickListener {
@@ -256,18 +277,16 @@ class ListaFragment : Fragment() {
         dialog.window?.setDimAmount(0.6f)
     }
 
+    //líneas comentadas para que no exporte automáticamente
     private fun ejecutarLogicaCierre(lista: List<Operacion>) {
-        val fechaHoy = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val nombre = "${fechaHoy}_cierre_caja"
-
-        try {
-            val listaCronologica = lista.sortedBy { it.timestamp }
-            val uri = ExcelExporter.exportar(requireContext(), listaCronologica, nombre)
-            ExcelExporter.compartir(requireContext(), uri)
-            viewModel.cerrarCaja()
-            Snackbar.make(binding.root, "Caja cerrada correctamente", Snackbar.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Snackbar.make(binding.root, "Error al exportar: ${e.message}", Snackbar.LENGTH_LONG).show()
+        lifecycleScope.launch {
+            try {
+                Snackbar.make(binding.root, "Cerrando caja...", Snackbar.LENGTH_SHORT).show()
+                CierreManager.ejecutar(requireContext(), lista)
+                Snackbar.make(binding.root, "Caja cerrada y mails enviados", Snackbar.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Snackbar.make(binding.root, "Error al cerrar caja: ${e.message}", Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 

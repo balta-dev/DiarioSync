@@ -66,7 +66,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_share"
+                android:src="@drawable/ic_share"
                 android:contentDescription="Exportar caja"
                 app:tint="@color/ds_accent" />
 
@@ -93,7 +93,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="VENTAS"
+                    android:text="INGRESOS"
                     android:textColor="@color/ds_text_tertiary"
                     android:textSize="9sp"
                     android:letterSpacing="0.08" />
@@ -125,7 +125,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="COMPRAS"
+                    android:text="EGRESOS"
                     android:textColor="@color/ds_text_tertiary"
                     android:textSize="9sp"
                     android:letterSpacing="0.08" />
